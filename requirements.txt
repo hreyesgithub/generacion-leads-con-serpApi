@@ -1,2 +1,9 @@
 requests 
 pandas
+streamlit
+plotly
+pyairtable 
+sendgrid
+python-dotenv 
+apscheduler 
+geopy

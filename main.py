@@ -3,6 +3,10 @@ import pandas as pd
 import time
 import json
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Carga las variables de entorno desde .env
 
 class GeneradorLeads:
     def __init__(self, api_key, ciudad="Madrid"):
@@ -13,6 +17,7 @@ class GeneradorLeads:
             api_key (str): Tu API key de SerpApi
             ciudad (str): Ciudad para la búsqueda (ej: "Madrid", "Barcelona")
         """
+        
         self.api_key = api_key
         self.ciudad = ciudad
         self.base_url = "https://serpapi.com/search"
@@ -131,7 +136,7 @@ class GeneradorLeads:
             return "ALTA PRIORIDAD"
         return "Normal"
     
-    def guardar_csv(self, filename="clientes_potenciales.csv"):
+    def guardar_csv(self, filename="clientes_potenciales"):
         """
         Guarda los leads en un archivo CSV
         
@@ -150,6 +155,8 @@ class GeneradorLeads:
         df = df.drop(columns=["Prioridad_Orden"])
         
         # Guardar en CSV
+        fecha_hoy = datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
+        filename=f"{filename}_{fecha_hoy}.csv"
         df.to_csv(filename, index=False, encoding='utf-8-sig')
         print(f"💾 Guardados {len(self.leads)} leads en '{filename}'")
         
@@ -168,6 +175,7 @@ class GeneradorLeads:
         tipos_negocio = [
             "Talleres mecánicos",
             "Agencias de seguros", 
+            "Reparación de electrodomésticos",
             "Clínicas"
         ]
         
@@ -182,7 +190,8 @@ class GeneradorLeads:
             df = pd.DataFrame(self.leads)
             alta_prioridad = df[df["Prioridad"] == "ALTA PRIORIDAD"]
             if not alta_prioridad.empty:
-                alta_prioridad.to_csv("clientes_alta_prioridad.csv", index=False, encoding='utf-8-sig')
+                fecha_hoy = datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
+                alta_prioridad.to_csv(f"clientes_alta_prioridad_{fecha_hoy}.csv", index=False, encoding='utf-8-sig')
                 print(f"💾 Guardados {len(alta_prioridad)} leads de ALTA PRIORIDAD en 'clientes_alta_prioridad.csv'")
         else:
             print("❌ No se encontraron leads. Revisa tu API key o parámetros de búsqueda.")
@@ -196,9 +205,9 @@ def main():
     print("🚀 GENERADOR DE LEADS PARA SERVICIOS DE AUTOMATIZACIÓN")
     print("=" * 60)
     
-    # CONFIGURACIÓN - ¡MODIFICA ESTOS VALORES!
-    API_KEY = "TU_API_KEY_AQUÍ"  # 👈 Reemplaza con tu API key real
-    CIUDAD = "Madrid"  # 👈 Cambia a tu ciudad
+    # CONFIGURACIÓN
+    API_KEY = os.getenv("SERPAPI_API_KEY") 
+    CIUDAD = "Toledo"  # 👈 Cambia a tu ciudad
     
     # Validar API key
     if API_KEY == "TU_API_KEY_AQUÍ":
